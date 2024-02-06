@@ -1,0 +1,17 @@
+{
+    "name": "mak-alamin/wp-task-manager",
+    "type": "wordpress-plugin",
+    "autoload": {
+        "psr-4": {
+            "WpTaskManager\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Mak Alamin",
+            "email": "makalamin012@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {}
+}
