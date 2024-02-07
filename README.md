@@ -5,7 +5,7 @@ Tags: task,task management,task manager\
 Requires at least: 4.5\
 Tested up to: 6.4.3\
 Stable tag: 1.0.0\
-License: GPL v3\
+License: GPL v3
 
 ## Installation (With Zip File)
 * Just plug and play

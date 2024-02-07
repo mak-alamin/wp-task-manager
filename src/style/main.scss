@@ -3,4 +3,12 @@
         color: coral;
         font-size: 30px;
     }
+    .taskForm{
+        border: 1px solid #eee;
+        padding: 20px;
+        max-width: 600px;
+    }
+    select#taskStatus {
+        max-width: 180px;
+    }
 } 
