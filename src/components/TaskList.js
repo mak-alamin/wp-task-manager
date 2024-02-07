@@ -2,6 +2,8 @@ import React from "react";
 
 const TaskList = () => {
   return (
+    <>
+    <h4>All Tasks</h4>
       <table class="table table-striped">
         <thead>
           <tr>
@@ -25,6 +27,7 @@ const TaskList = () => {
           </tr>
         </tbody>
       </table>
+      </>
   );
 };
 

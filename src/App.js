@@ -4,14 +4,14 @@ import TaskForm from './components/TaskForm';
 
 const App = () => {
 
-    const [showForm, setShowForm] = useState(true);
+    const [showForm, setShowForm] = useState(false);
 
     return (
         <div>
-            <h2 className='app-title'>Task Manager</h2>
+            <h2 className='app-title text-success'>Task Manager</h2>
             <hr />
 
-            <h4>All Tasks <button class="btn btn-outline-primary ms-2" onClick={() => setShowForm(true)}>Create New Task</button></h4>
+            <button class="btn btn-outline-primary mb-3" onClick={() => setShowForm(true)}>Create New Task</button>
             
             {showForm && <TaskForm></TaskForm>}
 

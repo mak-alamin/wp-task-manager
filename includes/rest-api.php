@@ -7,13 +7,14 @@ function wptm_create_task_endpoint()
 {
     register_rest_route(
         'wptm/v1',
-        '/create-task',
+        '/create-task/',
         array(
             'methods'  => 'POST',
             'callback' => 'wptm_create_task_callback',
-            'permission_callback' => function () {
-                return current_user_can('manage_options');
-            },
+            'permission_callback' => '__return_true',
+            // 'permission_callback' => function () {
+            //     return current_user_can('manage_options');
+            // },
         )
     );
 }
@@ -47,7 +48,10 @@ function wptm_create_task_callback($request)
 
     // Check if the task was successfully created
     if ($wpdb->insert_id) {
-        return new \WP_REST_Response(array('message' => 'Task created successfully'), 200);
+        return new \WP_REST_Response(array(
+            'success' => true,
+            'message' => 'Task created successfully'
+        ), 200);
     } else {
         return new \WP_Error('error', 'Failed to create task', array('status' => 500));
     }
