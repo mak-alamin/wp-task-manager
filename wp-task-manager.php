@@ -19,6 +19,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
 }
 
+// Vendor Autoload
+if(file_exists( __DIR__ . '/includes/rest-api.php')){
+    require_once __DIR__ . '/includes/rest-api.php';
+}
+
 /**
  * Add a top-level admin menu named "Tasks"
  *
@@ -59,3 +64,32 @@ function wp_tm_admin_enqueue_scripts($hook) {
     wp_enqueue_script( 'wp_tm-script', plugin_dir_url( __FILE__ ) . 'build/index.js', array( 'wp-element' ), '1.0.0', true );
 }
 add_action( 'admin_enqueue_scripts', 'wp_tm_admin_enqueue_scripts' );
+
+
+/**
+ * Create the tasks table in database
+ *
+ * @return void
+ */
+function create_wptm_tasks_table() {
+    global $wpdb;
+    
+    $table_name = $wpdb->prefix . 'wptm_tasks';
+
+        // SQL query to create the table
+        $sql = "CREATE TABLE IF NOT EXISTS $table_name (
+            id INT NOT NULL AUTO_INCREMENT,
+            title VARCHAR(255) NOT NULL,
+            description TEXT,
+            duration INT,
+            status VARCHAR(20),
+            PRIMARY KEY (id)
+        )";
+
+        // Include the upgrade.php file for dbDelta function
+        require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
+
+        // Execute the SQL query
+        dbDelta($sql);
+}
+register_activation_hook( __FILE__, 'create_wptm_tasks_table' );
