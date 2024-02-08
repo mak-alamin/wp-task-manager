@@ -104,7 +104,7 @@ const UpdateTaskForm = ({ taskId, fetchTasks }) => {
           <input
             type="text"
             className="form-control"
-            {...register("taskTitle")}
+            {...register("taskTitle", { required: true })}
           />
         </div>
 
