@@ -1,27 +1,38 @@
 import React, { useState, useEffect } from 'react';
-const TaskList = () => {
-  const [tasks, setTasks] = useState([]);
-
-  let url = makWPtmData.restRoot + 'wptm/v1/get-tasks';
-
+const TaskList = ({tasks, fetchTasks}) => {
   useEffect(() => {
-    const fetchTasks = async () => {
-      try {
-        const response = await fetch(url);
-
-        if (response.ok) {
-          const result = await response.json();
-          setTasks(result);
-        } else {
-          console.error('Failed to fetch tasks:', response.statusText);
-        }
-      } catch (error) {
-        console.error('Error:', error);
-      }
-    };
-
     fetchTasks();
-  }, []); // The empty dependency array ensures that the effect runs once after the component mounts
+  }, []);
+
+  const handleDelete = async (taskId) => {
+    if(!confirm("Are you sure you want to delete?")){
+      return;
+    }
+
+    let url = makWPtmData.restRoot + `wptm/v1/delete-task/${taskId}`;
+
+    try {
+      const response = await fetch(url, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          // Include any additional headers if needed
+        },
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        console.log(result); // Task deleted successfully
+     
+        fetchTasks();
+      } else {
+        const error = await response.json();
+        console.error(error); // Failed to delete task
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
 
   return (
     <>
@@ -45,7 +56,7 @@ const TaskList = () => {
             <td>{task.status}</td>
             <td>
               <button class="btn btn-outline-primary">Edit</button>
-              <button class="btn btn-outline-danger ms-2">Delete</button>
+              <button class="btn btn-outline-danger ms-2" onClick={()=> handleDelete(task.id)}>Delete</button>
             </td>
           </tr>
         ))}

@@ -93,3 +93,47 @@ function wptm_create_task_callback($request)
         return new \WP_Error('error', 'Failed to create task', array('status' => 500));
     }
 }
+
+// REST API endpoint for deleting a task
+add_action('rest_api_init', 'wptm_delete_task_endpoint');
+function wptm_delete_task_endpoint() {
+    register_rest_route(
+        'wptm/v1',
+        '/delete-task/(?P<id>\d+)',
+        array(
+            'methods'  => 'DELETE',
+            'callback' => 'wptm_delete_task_callback',
+            'permission_callback' => '__return_true',
+            // 'permission_callback' => function () {
+            //     return current_user_can('delete_posts');
+            // },
+            'args' => array(
+                'id' => array(
+                    'validate_callback' => function($param, $request, $key) {
+                        return is_numeric($param);
+                    }
+                ),
+            ),
+        )
+    );
+}
+
+// Callback function for deleting a task
+function wptm_delete_task_callback($data) {
+    global $wpdb;
+
+    $table_name = $wpdb->prefix . 'wptm_tasks';
+    $task_id = $data['id'];
+
+    // Check if the task exists
+    $existing_task = $wpdb->get_row($wpdb->prepare("SELECT * FROM $table_name WHERE id = %d", $task_id));
+
+    if (!$existing_task) {
+        return new WP_Error('not_found', 'Task not found', array('status' => 404));
+    }
+
+    // Delete the task from the database
+    $wpdb->delete($table_name, array('id' => $task_id));
+
+    return new WP_REST_Response(array('message' => 'Task deleted successfully'), 200);
+}

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import Alert from "./Alert";
 
-const TaskForm = () => {
+const CreateTaskForm = ({fetchTasks}) => {
   const [alertMessage, setAlertMessage] = useState('');
   const [alertType, setAlertType] = useState('success');
   const [showAlert, setShowAlert] = useState(false);
@@ -11,12 +11,11 @@ const TaskForm = () => {
     register,
     handleSubmit,
     watch,
+    reset,
     formState: { errors },
   } = useForm();
 
   const onSubmit = async (data) => {
-    console.log(data);
-
     let formData = {
       title: data?.taskTitle,
       description: data?.taskDescription,
@@ -43,9 +42,11 @@ const TaskForm = () => {
         const result = await response.json();
         console.log(result); // Task created successfully
         if(result.success){
+          reset();
           setAlertType('success');
           setShowAlert(true);
           setAlertMessage(result.message);
+          fetchTasks();
         }
       } else {
         const error = await response.json();
@@ -85,7 +86,7 @@ const TaskForm = () => {
           </label>
           <textarea
             className="form-control"
-            rows="3"
+            rows="2"
             {...register("taskDescription")}
           ></textarea>
         </div>
@@ -97,7 +98,7 @@ const TaskForm = () => {
           <input
             type="number"
             className="form-control"
-            defaultValue="60"
+            defaultValue="0"
             {...register("taskDuration")}
           />
         </div>
@@ -106,7 +107,7 @@ const TaskForm = () => {
           <label for="taskStatus" className="form-label">
             Status
           </label>
-          <select className="form-select" {...register("taskStatus")}>
+          <select className="form-select" defaultValue="pending" {...register("taskStatus")}>
             <option value="pending">Pending</option>
             <option value="in-progress">In Progress</option>
             <option value="completed">Completed</option>
@@ -118,4 +119,4 @@ const TaskForm = () => {
   );
 };
 
-export default TaskForm;
+export default CreateTaskForm;
