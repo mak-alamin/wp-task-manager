@@ -37,7 +37,7 @@ function wp_tm_create_tasks_menu() {
         'wp_task_manager', 
         'wp_tm_tasks_menu_page', 
         'dashicons-list-view', 
-        80
+        50
     );
 }
 add_action('admin_menu', 'wp_tm_create_tasks_menu');

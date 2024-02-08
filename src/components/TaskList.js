@@ -1,8 +1,14 @@
 import React, { useState, useEffect } from 'react';
-const TaskList = ({tasks, fetchTasks}) => {
+const TaskList = ({tasks, fetchTasks, setCurrentTaskId, setShowCreateForm, setShowUpdateForm}) => {
   useEffect(() => {
     fetchTasks();
   }, []);
+
+  const handleUpdate = async (taskId) => {
+    setCurrentTaskId(taskId);
+    setShowCreateForm(false);
+    setShowUpdateForm(true);
+  }
 
   const handleDelete = async (taskId) => {
     if(!confirm("Are you sure you want to delete?")){
@@ -48,14 +54,17 @@ const TaskList = ({tasks, fetchTasks}) => {
           </tr>
         </thead>
         <tbody>
-        {tasks.map((task) => (
+
+        {(tasks.length == 0) && <p>No task founds.</p>}
+
+        {(tasks.length != 0) && tasks.map((task) => (
           <tr key={task.id}>
             <td>{task.title}</td>
             <td>{task.description}</td>
             <td>{task.duration}</td>
             <td>{task.status}</td>
             <td>
-              <button class="btn btn-outline-primary">Edit</button>
+              <button class="btn btn-outline-primary" onClick={() => handleUpdate(task.id)}>Edit</button>
               <button class="btn btn-outline-danger ms-2" onClick={()=> handleDelete(task.id)}>Delete</button>
             </td>
           </tr>

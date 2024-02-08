@@ -1,9 +1,12 @@
 import React, { useState } from "react";
 import TaskList from "./components/TaskList";
 import CreateTaskForm from "./components/CreateTaskForm";
+import UpdateTaskForm from "./components/UpdateTaskForm";
 
 const App = () => {
-  const [showForm, setShowForm] = useState(false);
+  const [showCreateForm, setShowCreateForm] = useState(false);
+  const [showUpdateForm, setShowUpdateForm] = useState(false);
+  const [currentTaskId, setCurrentTaskId] = useState(0);
 
   const [tasks, setTasks] = useState([]);
 
@@ -30,21 +33,41 @@ const App = () => {
 
       <button
         class="btn btn-outline-primary mb-3"
-        onClick={() => setShowForm(true)}
+        onClick={() => {
+            setShowCreateForm(true); 
+            setShowUpdateForm(false);
+        }}
       >
         Create New Task
       </button>
 
-      {showForm && <button
-        class="btn btn-outline-success ms-2 mb-3"
-        onClick={() => setShowForm(false)}
-      >
-        All Tasks
-      </button>}
+      {(showCreateForm || showUpdateForm ) && (
+        <button
+          class="btn btn-outline-success ms-2 mb-3"
+          onClick={() => {
+            setShowCreateForm(false);
+            setShowUpdateForm(false);
+          }}
+        >
+          All Tasks
+        </button>
+      )}
 
-      {showForm && <CreateTaskForm fetchTasks={fetchTasks}></CreateTaskForm>}
+      {showCreateForm && (
+        <CreateTaskForm fetchTasks={fetchTasks}></CreateTaskForm>
+      )}
 
-      <TaskList tasks={tasks} fetchTasks={fetchTasks}></TaskList>
+      {showUpdateForm && (
+        <UpdateTaskForm taskId={currentTaskId} fetchTasks={fetchTasks}></UpdateTaskForm>
+      )}
+
+      <TaskList
+        tasks={tasks}
+        fetchTasks={fetchTasks}
+        setCurrentTaskId={setCurrentTaskId}
+        setShowCreateForm={setShowCreateForm}
+        setShowUpdateForm={setShowUpdateForm}
+      ></TaskList>
     </div>
   );
 };

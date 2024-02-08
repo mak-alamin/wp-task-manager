@@ -1,12 +1,58 @@
 <?php
 
-if ( ! defined( 'ABSPATH' ) ) {
-	exit; // Exit if accessed directly
+if (!defined('ABSPATH')) {
+    exit; // Exit if accessed directly
 }
+
+// REST API endpoint for fetching a single task
+add_action('rest_api_init', 'wptm_get_single_task_endpoint');
+function wptm_get_single_task_endpoint()
+{
+    register_rest_route(
+        'wptm/v1',
+        '/get-task/(?P<id>\d+)',
+        array(
+            'methods'  => 'GET',
+            'callback' => 'wptm_get_single_task_callback',
+            'permission_callback' => '__return_true',
+            // 'permission_callback' => function () {
+            //     return current_user_can('edit_posts');
+            // },
+            'args' => array(
+                'id' => array(
+                    'validate_callback' => function ($param, $request, $key) {
+                        return is_numeric($param);
+                    }
+                ),
+            ),
+        )
+    );
+}
+
+// Callback function for fetching a single task
+function wptm_get_single_task_callback($data)
+{
+    global $wpdb;
+
+    $table_name = $wpdb->prefix . 'wptm_tasks';
+    $task_id = $data['id'];
+
+    // Retrieve the task from the database
+    $task = $wpdb->get_row($wpdb->prepare("SELECT * FROM $table_name WHERE id = %d", $task_id), ARRAY_A);
+
+    // Check if the task exists
+    if ($task) {
+        return new WP_REST_Response($task, 200);
+    } else {
+        return new WP_Error('not_found', 'Task not found', array('status' => 404));
+    }
+}
+
 
 // REST API endpoint for fetching all tasks
 add_action('rest_api_init', 'wptm_get_all_tasks_endpoint');
-function wptm_get_all_tasks_endpoint() {
+function wptm_get_all_tasks_endpoint()
+{
     register_rest_route(
         'wptm/v1',
         '/get-tasks',
@@ -22,7 +68,8 @@ function wptm_get_all_tasks_endpoint() {
 }
 
 // Callback function for fetching all tasks
-function wptm_get_all_tasks_callback() {
+function wptm_get_all_tasks_callback()
+{
     global $wpdb;
 
     $table_name = $wpdb->prefix . 'wptm_tasks';
@@ -38,7 +85,7 @@ function wptm_get_all_tasks_callback() {
     }
 }
 
-// REST API endpoint for creating task
+// REST API endpoint for creating a new task
 add_action('rest_api_init', 'wptm_create_task_endpoint');
 function wptm_create_task_endpoint()
 {
@@ -94,9 +141,76 @@ function wptm_create_task_callback($request)
     }
 }
 
+// REST API endpoint for updating a single task
+add_action('rest_api_init', 'wptm_update_single_task_endpoint');
+function wptm_update_single_task_endpoint()
+{
+    register_rest_route(
+        'wptm/v1',
+        '/update-task/(?P<id>\d+)',
+        array(
+            'methods'  => 'POST',
+            'callback' => 'wptm_update_single_task_callback',
+            'permission_callback' => '__return_true',
+            // 'permission_callback' => function () {
+            //     return current_user_can('edit_posts');
+            // },
+            'args' => array(
+                'id' => array(
+                    'validate_callback' => function ($param, $request, $key) {
+                        return is_numeric($param);
+                    }
+                ),
+            ),
+        )
+    );
+}
+
+// Callback function for updating a single task
+function wptm_update_single_task_callback($data)
+{
+    global $wpdb;
+
+    $table_name = $wpdb->prefix . 'wptm_tasks';
+    $task_id = $data['id'];
+
+    // Check if the task exists
+    $existing_task = $wpdb->get_row($wpdb->prepare("SELECT * FROM $table_name WHERE id = %d", $task_id));
+
+    if (!$existing_task) {
+        return new WP_Error('not_found', 'Task not found', array('status' => 404));
+    }
+
+    // Get updated data from the request
+    $title       = sanitize_text_field($data['title']);
+    $description = sanitize_text_field($data['description']);
+    $duration    = intval($data['duration']);
+    $status      = sanitize_text_field($data['status']);
+
+    // Update the task in the database
+    $wpdb->update(
+        $table_name,
+        array(
+            'title'       => $title,
+            'description' => $description,
+            'duration'    => $duration,
+            'status'      => $status,
+        ),
+        array('id' => $task_id),
+        array('%s', '%s', '%d', '%s'),
+        array('%d')
+    );
+
+    return new WP_REST_Response(array(
+        'success' => true,
+        'message' => 'Task updated successfully'
+    ), 200);
+}
+
 // REST API endpoint for deleting a task
 add_action('rest_api_init', 'wptm_delete_task_endpoint');
-function wptm_delete_task_endpoint() {
+function wptm_delete_task_endpoint()
+{
     register_rest_route(
         'wptm/v1',
         '/delete-task/(?P<id>\d+)',
@@ -109,7 +223,7 @@ function wptm_delete_task_endpoint() {
             // },
             'args' => array(
                 'id' => array(
-                    'validate_callback' => function($param, $request, $key) {
+                    'validate_callback' => function ($param, $request, $key) {
                         return is_numeric($param);
                     }
                 ),
@@ -119,7 +233,8 @@ function wptm_delete_task_endpoint() {
 }
 
 // Callback function for deleting a task
-function wptm_delete_task_callback($data) {
+function wptm_delete_task_callback($data)
+{
     global $wpdb;
 
     $table_name = $wpdb->prefix . 'wptm_tasks';
