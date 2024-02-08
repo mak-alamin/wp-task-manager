@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import Alert from "./Alert";
 
 const TaskForm = () => {
-  const [alertMessage, setAlertMessage] = useState('Testing... ');
+  const [alertMessage, setAlertMessage] = useState('');
   const [alertType, setAlertType] = useState('success');
   const [showAlert, setShowAlert] = useState(false);
 
