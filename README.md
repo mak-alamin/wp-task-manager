@@ -7,10 +7,10 @@ Tested up to: 6.4.3\
 Stable tag: 1.0.0\
 License: GPL v3
 
-## Installation (With Zip File)
-* Just plug and play
+## Installation for users
+* Just download, plug and play
 
-## Installation (From Github)
+## Installation for development
 1. Download or Clone the Repo
 2. Run `composer install`
 3. Run `npm install`
