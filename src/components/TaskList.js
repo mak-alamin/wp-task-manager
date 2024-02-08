@@ -22,6 +22,7 @@ const TaskList = ({tasks, fetchTasks, setCurrentTaskId, setShowCreateForm, setSh
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
+          "X-WP-Nonce": makWPtmData?.nonce,
           // Include any additional headers if needed
         },
       });
@@ -61,7 +62,7 @@ const TaskList = ({tasks, fetchTasks, setCurrentTaskId, setShowCreateForm, setSh
           <tr key={task.id}>
             <td>{task.title}</td>
             <td>{task.description}</td>
-            <td>{task.duration}</td>
+            <td>{task.duration} hours</td>
             <td>{task.status}</td>
             <td>
               <button class="btn btn-outline-primary" onClick={() => handleUpdate(task.id)}>Edit</button>

@@ -32,11 +32,14 @@ const CreateTaskForm = ({fetchTasks}) => {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            "X-WP-Nonce": makWPtmData?.nonce,
             // Include any additional headers if needed
           },
           body: JSON.stringify(formData),
         }
-      );
+      ); 
+      
+      console.log(response);
 
       if (response.ok) {
         const result = await response.json();

@@ -2,7 +2,7 @@
 /**
 * Plugin Name: WP Task Manager
 * Plugin URI: 
-* Description: Simple Task Manager plugin
+* Description: Simple Task Manager WP plugin
 * Version: 1.0.0
 * Requires at least: 5.2
 * Requires PHP: 7.2
@@ -19,7 +19,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
 }
 
-// Vendor Autoload
+// Require Rest Api File
 if(file_exists( __DIR__ . '/includes/rest-api.php')){
     require_once __DIR__ . '/includes/rest-api.php';
 }
@@ -68,7 +68,8 @@ function wp_tm_admin_enqueue_scripts($hook) {
     wp_enqueue_script( 'mak_wptm-script', plugin_dir_url( __FILE__ ) . 'build/index.js', array( 'wp-element' ), '1.0.0', true );
 
     wp_localize_script('mak_wptm-script', 'makWPtmData', array(
-        'restRoot' => get_rest_url()
+        'restRoot' => get_rest_url(),
+        'nonce' => wp_create_nonce('wp_rest')
     ) );
 }
 add_action( 'admin_enqueue_scripts', 'wp_tm_admin_enqueue_scripts' );

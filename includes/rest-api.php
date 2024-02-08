@@ -14,10 +14,7 @@ function wptm_get_single_task_endpoint()
         array(
             'methods'  => 'GET',
             'callback' => 'wptm_get_single_task_callback',
-            'permission_callback' => '__return_true',
-            // 'permission_callback' => function () {
-            //     return current_user_can('edit_posts');
-            // },
+            'permission_callback' => 'wptm_verify_admin_request',
             'args' => array(
                 'id' => array(
                     'validate_callback' => function ($param, $request, $key) {
@@ -59,10 +56,7 @@ function wptm_get_all_tasks_endpoint()
         array(
             'methods'  => 'GET',
             'callback' => 'wptm_get_all_tasks_callback',
-            'permission_callback' => '__return_true',
-            // 'permission_callback' => function () {
-            //     return current_user_can('edit_posts'); // Adjust the capability as needed
-            // },
+            'permission_callback' => 'wptm_verify_admin_request',
         )
     );
 }
@@ -95,10 +89,7 @@ function wptm_create_task_endpoint()
         array(
             'methods'  => 'POST',
             'callback' => 'wptm_create_task_callback',
-            'permission_callback' => '__return_true',
-            // 'permission_callback' => function () {
-            //     return current_user_can('manage_options');
-            // },
+            'permission_callback' => 'wptm_verify_admin_request',
         )
     );
 }
@@ -151,10 +142,7 @@ function wptm_update_single_task_endpoint()
         array(
             'methods'  => 'POST',
             'callback' => 'wptm_update_single_task_callback',
-            'permission_callback' => '__return_true',
-            // 'permission_callback' => function () {
-            //     return current_user_can('edit_posts');
-            // },
+            'permission_callback' => 'wptm_verify_admin_request',
             'args' => array(
                 'id' => array(
                     'validate_callback' => function ($param, $request, $key) {
@@ -217,10 +205,7 @@ function wptm_delete_task_endpoint()
         array(
             'methods'  => 'DELETE',
             'callback' => 'wptm_delete_task_callback',
-            'permission_callback' => '__return_true',
-            // 'permission_callback' => function () {
-            //     return current_user_can('delete_posts');
-            // },
+            'permission_callback' => 'wptm_verify_admin_request',
             'args' => array(
                 'id' => array(
                     'validate_callback' => function ($param, $request, $key) {
@@ -251,4 +236,17 @@ function wptm_delete_task_callback($data)
     $wpdb->delete($table_name, array('id' => $task_id));
 
     return new WP_REST_Response(array('message' => 'Task deleted successfully'), 200);
+}
+
+function wptm_verify_admin_request($request)
+{
+    $headers = $request->get_headers();
+
+    $_nonce = isset($headers['x_wp_nonce']) ? $headers['x_wp_nonce'][0] : '';
+
+    if (!wp_verify_nonce($_nonce, 'wp_rest')) {
+        return false;
+    }
+
+    return true;
 }

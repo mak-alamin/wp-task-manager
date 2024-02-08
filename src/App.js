@@ -13,7 +13,14 @@ const App = () => {
   const fetchTasks = async () => {
     let url = makWPtmData.restRoot + "wptm/v1/get-tasks";
     try {
-      const response = await fetch(url);
+      const response = await fetch(url , {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          "X-WP-Nonce": makWPtmData?.nonce,
+          // Include any additional headers if needed
+        },
+      });
 
       if (response.ok) {
         const result = await response.json();

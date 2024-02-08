@@ -2,9 +2,9 @@ import React, { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import Alert from "./Alert";
 
-const UpdateTaskForm = ({taskId, fetchTasks}) => {
-  const [alertMessage, setAlertMessage] = useState('');
-  const [alertType, setAlertType] = useState('success');
+const UpdateTaskForm = ({ taskId, fetchTasks }) => {
+  const [alertMessage, setAlertMessage] = useState("");
+  const [alertType, setAlertType] = useState("success");
   const [showAlert, setShowAlert] = useState(false);
 
   const {
@@ -21,7 +21,15 @@ const UpdateTaskForm = ({taskId, fetchTasks}) => {
       let url = makWPtmData.restRoot + `wptm/v1/get-task/${taskId}`;
 
       try {
-        const response = await fetch(url);
+        const response = await fetch(url , {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            "X-WP-Nonce": makWPtmData?.nonce,
+            // Include any additional headers if needed
+          },
+        });
+        
         if (response.ok) {
           const result = await response.json();
           setValue("taskTitle", result?.title);
@@ -29,10 +37,10 @@ const UpdateTaskForm = ({taskId, fetchTasks}) => {
           setValue("taskDuration", result?.duration);
           setValue("taskStatus", result?.status);
         } else {
-          console.error('Failed to fetch task:', response.statusText);
+          console.error("Failed to fetch task:", response.statusText);
         }
       } catch (error) {
-        console.error('Error:', error);
+        console.error("Error:", error);
       }
     };
 
@@ -50,23 +58,21 @@ const UpdateTaskForm = ({taskId, fetchTasks}) => {
     let url = makWPtmData.restRoot + `wptm/v1/update-task/${taskId}`;
 
     try {
-      const response = await fetch(
-        url,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            // Include any additional headers if needed
-          },
-          body: JSON.stringify(formData),
-        }
-      );
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-WP-Nonce": makWPtmData?.nonce,
+          // Include any additional headers if needed
+        },
+        body: JSON.stringify(formData),
+      });
 
       if (response.ok) {
         const result = await response.json();
         console.log(result);
-        if(result.success){
-          setAlertType('success');
+        if (result.success) {
+          setAlertType("success");
           setShowAlert(true);
           setAlertMessage(result.message);
           fetchTasks();
@@ -74,13 +80,13 @@ const UpdateTaskForm = ({taskId, fetchTasks}) => {
       } else {
         const error = await response.json();
         console.error(error);
-        setAlertType('danger');
+        setAlertType("danger");
         setShowAlert(true);
         setAlertMessage("Something went wrong!");
       }
     } catch (error) {
       console.error("Error:", error);
-      setAlertType('danger');
+      setAlertType("danger");
       setShowAlert(true);
       setAlertMessage("Something went wrong!");
     }
@@ -88,7 +94,7 @@ const UpdateTaskForm = ({taskId, fetchTasks}) => {
 
   return (
     <div className="taskForm-wrapper mb-5">
-     {showAlert && <Alert message={alertMessage} type={alertType}></Alert>}
+      {showAlert && <Alert message={alertMessage} type={alertType}></Alert>}
 
       <form className="taskForm" onSubmit={handleSubmit(onSubmit)}>
         <div className="mb-3">
